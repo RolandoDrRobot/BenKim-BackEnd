@@ -20,12 +20,20 @@ benKimServer.get('/auth/google',
   passport.authenticate('google', { scope: [ 'email', 'profile' ] })
 );
 
-benKimServer.get( '/auth/google/callback',
-  passport.authenticate( 'google', {
-    successRedirect: 'http://localhost:3000/dashboard',
-    failureRedirect: '/auth/google/failure'
-  })
-);
+let user:any = {}
+
+benKimServer.get('/auth/google/callback', (req:any, res:any, next:any) => {
+  passport.authenticate('google', (err:any, userGoogle:any) => {
+    if (err) return next(err);
+    if (!userGoogle) return res.redirect('/auth/google/failure');
+    user = userGoogle;
+    return res.redirect('http://localhost:3000/dashboard');
+  })(req, res, next);
+});
+
+benKimServer.get('/api/user', (req:any, res:any) => {
+  user ? res.json(user) : res.status(401).json({ error: 'No se ha autenticado ningún usuario' });
+});
 
 benKimServer.get('/logout', (req: any, res: any) => {
   req.logout();
