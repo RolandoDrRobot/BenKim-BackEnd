@@ -4,28 +4,19 @@ import { run } from './firebase';
 const database = run();
 const purchasesDB = database.collection('Purchases');
 
-const getPurchases = async (vaultsDB:any, address: string) => {
-  let purchases:Array<any> = [];
-  const snapshot = await vaultsDB.get();
-  const allDocuments = snapshot.docs.map((doc: { data: () => any; }) => doc.data());
-  allDocuments.forEach(function (item:any, index:any) {
-    if(item.owner === address) purchases.push(item);
-  });
-  
-  return purchases;
-}
-
 const createPurchase = async (amount: number, owner: string) => {
+  const when = new Date();
+  const tickers = await fetchBtcPrice();
+  let purchasePrice = 0;
+  for (const ticker in tickers) { purchasePrice = tickers[ticker].bid }
+  const cost = await calculateCost(amount, purchasePrice);
   let createPurchaseStatus = { status: 'no created' };
-  const date = new Date();
-  const when = date.getDate();
-  const purchasePrice = await fetchBtcPrice();
-  const cost = calculateCost(amount, purchasePrice);
 
   try {
-    const newPurchase = await purchasesDB.doc(when).get();
+    const newPurchase = await purchasesDB.doc(amount).get();
     if (!newPurchase.exists) {
-      purchasesDB.doc(when).set({
+      console.log(cost)
+      purchasesDB.doc(amount).set({
         when: when,
         purchasePrice: purchasePrice,
         amount: amount,
@@ -51,3 +42,17 @@ const removePurchase = async (when: Date) => {
   }
   return status;
 }
+
+const getPurchases = async (purchasesDB:any, owner: string) => {
+  let purchases:Array<any> = [];
+  const snapshot = await purchasesDB.get();
+  const allDocuments = snapshot.docs.map((doc: { data: () => any; }) => doc.data());
+  allDocuments.forEach(function (item:any, index:any) {
+    if(item.owner === owner) purchases.push(item);
+  });
+
+  return purchases;
+}
+
+
+export { getPurchases, createPurchase, removePurchase };
