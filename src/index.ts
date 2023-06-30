@@ -38,7 +38,7 @@ benKimServer.get('/api/user', (req:any, res:any) => {
 benKimServer.get('/logout', (req: any, res: any) => {
   req.logout();
   req.session.destroy();
-  res.send('Goodbye!'); 
+  res.send('Goodbye!');
 });
 
 benKimServer.get('/auth/google/failure', (req: any, res: any) => {
@@ -47,7 +47,7 @@ benKimServer.get('/auth/google/failure', (req: any, res: any) => {
 
 // Server APIs
 benKimServer.post('/createPurchase', (req: Request, res: Response) => {
-  createPurchase(req.body.amount, req.body.owner)
+  createPurchase(req.body.amount, req.body.userID)
     .then((result) => { res.json(result); });
 });
 
