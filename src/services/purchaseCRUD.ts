@@ -45,10 +45,14 @@ const removePurchase = async (when: Date) => {
 const getPurchases = async (userID: string) => {
   const btcPrice = await fetchBtcPrice();
   let purchases:any = { purchases: [], totals: {}};
+  let totalPurchasePrice:any = 0;
   let totalAmount:any = 0;
   let totalCost:any = 0;
   let totalCurrentValue:any = 0;
-  let totalValueCostComparison:any = 0;
+  let totalValueCostComparison:any = {
+    percentage: 0,
+    money: 0
+  };
   let purchasesList:Array<any> = [];
 
   const snapshot = await purchasesDB.get();
@@ -69,21 +73,27 @@ const getPurchases = async (userID: string) => {
     }
     if(item.userID === userID) {
       totalAmount = totalAmount + (item.amount - 0);
+      totalPurchasePrice = totalPurchasePrice + (item.purchasePrice - 0);
       totalCost = totalCost + (item.cost - 0);
       totalCurrentValue = totalCurrentValue + (currentValue - 0);
-      totalValueCostComparison = totalValueCostComparison + (valueCostComparison.money - 0);
+      totalValueCostComparison.percentage = totalValueCostComparison.percentage + (valueCostComparison.percentage - 0);
+      totalValueCostComparison.money = totalValueCostComparison.money + (valueCostComparison.money - 0);
       purchasesList.push(purchase);
     }
   });
 
   let totals = {
     totalAmount: totalAmount,
+    totalPurchasePrice: totalPurchasePrice / purchasesList.length,
     totalCost: totalCost,
     totalCurrentValue: totalCurrentValue,
-    totalValueCostComparison: totalValueCostComparison
+    totalValueCostComparison: {
+      percentge: totalValueCostComparison.percentage,
+      money: totalValueCostComparison.money
+    }
   }
 
-  purchases.purchases = purchasesList;
+  purchases.purchases = purchasesList.reverse();
   purchases.totals = totals;
 
   return purchases;
