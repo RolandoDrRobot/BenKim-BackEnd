@@ -5,7 +5,7 @@ const passport = require('passport');
 require('./services/auth');
 
 import { Request, Response } from 'express';
-import { createPurchase } from './services/purchaseCRUD'
+import { createPurchase, getPurchases } from './services/purchaseCRUD'
 
 // Authentication
 const benKimServer = express();
@@ -48,6 +48,11 @@ benKimServer.get('/auth/google/failure', (req: any, res: any) => {
 // Server APIs
 benKimServer.post('/createPurchase', (req: Request, res: Response) => {
   createPurchase(req.body.amount, req.body.userID)
+    .then((result) => { res.json(result); });
+});
+
+benKimServer.post('/getPurcharses', (req: Request, res: Response) => {
+  getPurchases(req.body.userID)
     .then((result) => { res.json(result); });
 });
 

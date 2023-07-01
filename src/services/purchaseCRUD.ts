@@ -11,7 +11,6 @@ const createPurchase = async (amount: number, userID: string) => {
   for (const ticker in tickers) { purchasePrice = tickers[ticker].bid }
   const cost = await calculateCost(amount, purchasePrice);
   let createPurchaseStatus = { status: 'no created' };
-
   const purchaseID = userID + when.toString() + amount;
 
   try {
@@ -22,7 +21,8 @@ const createPurchase = async (amount: number, userID: string) => {
         purchasePrice: purchasePrice,
         amount: amount,
         cost: cost,
-        purchaseID: purchaseID
+        purchaseID: purchaseID,
+        userID: userID
       });
       createPurchaseStatus.status = 'Purchase created';
     } else { createPurchaseStatus.status = 'The Purchase already exist!'; }
@@ -44,12 +44,28 @@ const removePurchase = async (when: Date) => {
   return status;
 }
 
-const getPurchases = async (purchasesDB:any, purchaseID: string) => {
+const getPurchases = async (userID: string) => {
+  const tickers = await fetchBtcPrice();
+  let btcPrice = 0;
+  for (const ticker in tickers) { btcPrice = tickers[ticker].bid }
   let purchases:Array<any> = [];
   const snapshot = await purchasesDB.get();
   const allDocuments = snapshot.docs.map((doc: { data: () => any; }) => doc.data());
   allDocuments.forEach(function (item:any, index:any) {
-    if(item.purchaseID === purchaseID) purchases.push(item);
+    const currentValue = btcPrice * item.amount;
+    const valueCostComparison = {
+      percentage: ((currentValue - item.cost) / item.cost) * 100,
+      money: currentValue - item.cost
+    }
+    const purchase = {
+      when: item.when,
+      purchasePrice: item.purchasePrice,
+      amount: item.amount,
+      cost: item.cost,
+      currentValue: currentValue,
+      valueCostComparison: valueCostComparison
+    }
+    if(item.userID === userID) purchases.push(purchase);
   });
 
   return purchases;
