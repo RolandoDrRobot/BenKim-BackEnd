@@ -21,7 +21,6 @@ benKimServer.get('/auth/google',
 );
 
 let user:any = {}
-
 benKimServer.get('/auth/google/callback', (req:any, res:any, next:any) => {
   passport.authenticate('google', (err:any, userGoogle:any) => {
     if (err) return next(err);
@@ -33,12 +32,6 @@ benKimServer.get('/auth/google/callback', (req:any, res:any, next:any) => {
 
 benKimServer.get('/api/user', (req:any, res:any) => {
   user ? res.json(user) : res.status(401).json({ error: 'No se ha autenticado ningún usuario' });
-});
-
-benKimServer.get('/logout', (req: any, res: any) => {
-  req.logout();
-  req.session.destroy();
-  res.send('Goodbye!');
 });
 
 benKimServer.get('/auth/google/failure', (req: any, res: any) => {

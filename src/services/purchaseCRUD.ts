@@ -6,10 +6,8 @@ const purchasesDB = database.collection('Purchases');
 
 const createPurchase = async (amount: number, userID: string) => {
   const when = new Date();
-  const tickers = await fetchBtcPrice();
-  let purchasePrice = 0;
-  for (const ticker in tickers) { purchasePrice = tickers[ticker].bid }
-  const cost = await calculateCost(amount, purchasePrice);
+  const btcPrice = await fetchBtcPrice();
+  const cost = await calculateCost(amount, btcPrice);
   let createPurchaseStatus = { status: 'no created' };
   const purchaseID = userID + when.toString() + amount;
 
@@ -18,7 +16,7 @@ const createPurchase = async (amount: number, userID: string) => {
     if (!newPurchase.exists) {
       purchasesDB.doc(purchaseID).set({
         when: when,
-        purchasePrice: purchasePrice,
+        purchasePrice: btcPrice,
         amount: amount,
         cost: cost,
         purchaseID: purchaseID,
@@ -45,10 +43,14 @@ const removePurchase = async (when: Date) => {
 }
 
 const getPurchases = async (userID: string) => {
-  const tickers = await fetchBtcPrice();
-  let btcPrice = 0;
-  for (const ticker in tickers) { btcPrice = tickers[ticker].bid }
-  let purchases:Array<any> = [];
+  const btcPrice = await fetchBtcPrice();
+  let purchases:any = { purchases: [], totals: {}};
+  let totalAmount:any = 0;
+  let totalCost:any = 0;
+  let totalCurrentValue:any = 0;
+  let totalValueCostComparison:any = 0;
+  let purchasesList:Array<any> = [];
+
   const snapshot = await purchasesDB.get();
   const allDocuments = snapshot.docs.map((doc: { data: () => any; }) => doc.data());
   allDocuments.forEach(function (item:any, index:any) {
@@ -65,8 +67,24 @@ const getPurchases = async (userID: string) => {
       currentValue: currentValue,
       valueCostComparison: valueCostComparison
     }
-    if(item.userID === userID) purchases.push(purchase);
+    if(item.userID === userID) {
+      totalAmount = totalAmount + (item.amount - 0);
+      totalCost = totalCost + (item.cost - 0);
+      totalCurrentValue = totalCurrentValue + (currentValue - 0);
+      totalValueCostComparison = totalValueCostComparison + (valueCostComparison.money - 0);
+      purchasesList.push(purchase);
+    }
   });
+
+  let totals = {
+    totalAmount: totalAmount,
+    totalCost: totalCost,
+    totalCurrentValue: totalCurrentValue,
+    totalValueCostComparison: totalValueCostComparison
+  }
+
+  purchases.purchases = purchasesList;
+  purchases.totals = totals;
 
   return purchases;
 }
