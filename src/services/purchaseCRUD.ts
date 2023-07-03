@@ -88,7 +88,7 @@ const getPurchases = async (userID: string) => {
     totalCost: totalCost,
     totalCurrentValue: totalCurrentValue,
     totalValueCostComparison: {
-      percentge: totalValueCostComparison.percentage,
+      percentge: totalValueCostComparison.percentage / purchasesList.length,
       money: totalValueCostComparison.money
     }
   }
