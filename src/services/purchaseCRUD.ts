@@ -59,37 +59,35 @@ const getPurchases = async (userID: string) => {
   const allDocuments = snapshot.docs.map((doc: { data: () => any; }) => doc.data());
   allDocuments.forEach(function (item:any, index:any) {
     const currentValue = btcPrice * item.amount;
-    const valueCostComparison = {
-      percentage: ((currentValue - item.cost) / item.cost) * 100,
-      money: currentValue - item.cost
-    }
     const purchase = {
       when: item.when,
       purchasePrice: item.purchasePrice,
       amount: item.amount,
       cost: item.cost,
       currentValue: currentValue,
-      valueCostComparison: valueCostComparison
+      valueCostComparison: {
+        percentage: ((currentValue - item.cost) / item.cost) * 100,
+        money: currentValue - item.cost
+      }
     }
     if(item.userID === userID) {
       totalAmount = totalAmount + (item.amount - 0);
       totalPurchasePrice = totalPurchasePrice + (item.purchasePrice - 0);
       totalCost = totalCost + (item.cost - 0);
       totalCurrentValue = totalCurrentValue + (currentValue - 0);
-      totalValueCostComparison.percentage = totalValueCostComparison.percentage + (valueCostComparison.percentage - 0);
-      totalValueCostComparison.money = totalValueCostComparison.money + (valueCostComparison.money - 0);
+      totalValueCostComparison.money = totalValueCostComparison.money + (purchase.valueCostComparison.money - 0);
       purchasesList.push(purchase);
     }
   });
 
   let totals = {
-    totalAmount: totalAmount,
-    totalPurchasePrice: totalPurchasePrice / purchasesList.length,
-    totalCost: totalCost,
-    totalCurrentValue: totalCurrentValue,
+    totalAmount: totalAmount || 0,
+    totalPurchasePrice: totalPurchasePrice / purchasesList.length || 0,
+    totalCost: totalCost || 0,
+    totalCurrentValue: totalCurrentValue || 0,
     totalValueCostComparison: {
-      percentge: totalValueCostComparison.percentage / purchasesList.length,
-      money: totalValueCostComparison.money
+      percentge: ((totalCurrentValue - totalCost) / totalCost) * 100 || 0,
+      money: totalValueCostComparison.money || 0
     }
   }
 
