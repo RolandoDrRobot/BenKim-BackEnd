@@ -1,11 +1,18 @@
+import { run } from './services/firebase';
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
+const database = run();
+const purchasesDB = database.collection('Purchases');
+const usersDB = database.collection('Users');
 require('./services/auth');
 
 import { Request, Response } from 'express';
-import { createPurchase, getPurchases } from './services/purchaseCRUD'
+import { createPurchase, getPurchases } from './services/purchaseCRUD';
+import { createUser } from './services/usersCRUD';
+import { fetchBtcPrice } from './services/fetchBtcPrice';
+
 
 // Authentication
 const benKimServer = express();
@@ -26,6 +33,7 @@ benKimServer.get('/auth/google/callback', (req:any, res:any, next:any) => {
     if (err) return next(err);
     if (!userGoogle) return res.redirect('/auth/google/failure');
     user = userGoogle;
+    createUser(user, usersDB);
     return res.redirect('http://localhost:3000/dashboard');
   })(req, res, next);
 });
@@ -40,13 +48,17 @@ benKimServer.get('/auth/google/failure', (req: any, res: any) => {
 
 // Server APIs
 benKimServer.post('/createPurchase', (req: Request, res: Response) => {
-  createPurchase(req.body.amount, req.body.userID)
+  createPurchase(req.body.amount, req.body.userID, purchasesDB)
     .then((result) => { res.json(result); });
 });
 
 benKimServer.post('/getPurcharses', (req: Request, res: Response) => {
-  getPurchases(req.body.userID)
+  getPurchases(req.body.userID, purchasesDB)
     .then((result) => { res.json(result); });
+});
+
+benKimServer.get('/fetchBtcPrice', (req: Request, res: Response) => {
+  fetchBtcPrice().then((result) => { res.json(result); });
 });
 
 benKimServer.listen(443, () => {

@@ -1,10 +1,7 @@
 import { fetchBtcPrice } from './fetchBtcPrice';
 import { calculateCost } from './calculateCost';
-import { run } from './firebase';
-const database = run();
-const purchasesDB = database.collection('Purchases');
 
-const createPurchase = async (amount: number, userID: string) => {
+const createPurchase = async (amount: number, userID: string, purchasesDB:any) => {
   const when = new Date();
   const btcPrice = await fetchBtcPrice();
   const cost = await calculateCost(amount, btcPrice);
@@ -31,18 +28,18 @@ const createPurchase = async (amount: number, userID: string) => {
   return createPurchaseStatus;
 }
 
-const removePurchase = async (when: Date) => {
-  let status = { status: 'no removed' };
-  try {
-    const purchase = await purchasesDB.doc(when).get();
-    purchase.exists ? status.status = 'removed' : status.status = 'The Purchase does not exist';
-  } catch (e) {
-    status.status = 'There was an error with the request: ' + e;
-  }
-  return status;
-}
+// const removePurchase = async (when: Date) => {
+//   let status = { status: 'no removed' };
+//   try {
+//     const purchase = await purchasesDB.doc(when).get();
+//     purchase.exists ? status.status = 'removed' : status.status = 'The Purchase does not exist';
+//   } catch (e) {
+//     status.status = 'There was an error with the request: ' + e;
+//   }
+//   return status;
+// }
 
-const getPurchases = async (userID: string) => {
+const getPurchases = async (userID: string, purchasesDB:any) => {
   const btcPrice = await fetchBtcPrice();
   let purchases:any = { purchases: [], totals: {}};
   let totalPurchasePrice:any = 0;
@@ -98,4 +95,4 @@ const getPurchases = async (userID: string) => {
 }
 
 
-export { getPurchases, createPurchase, removePurchase };
+export { getPurchases, createPurchase };
