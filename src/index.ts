@@ -32,6 +32,7 @@ benKimServer.get('/auth/google/callback', (req:any, res:any, next:any) => {
   passport.authenticate('google', (err:any, userGoogle:any) => {
     if (err) return next(err);
     if (!userGoogle) return res.redirect('/auth/google/failure');
+    console.log(userGoogle);
     user = userGoogle;
     createUser(user, usersDB);
     return res.redirect('http://localhost:3000/dashboard');
