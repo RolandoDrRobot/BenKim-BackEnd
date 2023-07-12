@@ -1,18 +1,28 @@
 import { fetchBtcPrice } from './fetchBtcPrice';
 import { calculateCost } from './calculateCost';
 
-const createPurchase = async (amount: number, userID: string, purchasesDB:any) => {
-  const when = new Date();
-  const btcPrice = await fetchBtcPrice();
+const createPurchase = async (amount: number, when: any, price: number, userID: string, purchasesDB:any) => {
+  // Sum a day for custom Date
+  const customDate = Date.parse(when);
+  const updatedCustomDate = customDate + (24 * 60 * 60 * 1000);
+  const newCustomDate = new Date(updatedCustomDate);
+  // Today
+  const today = new Date();
+  // Set date
+  const whenDate = newCustomDate.getTime() || today.getTime();
+  const parsedDate = whenDate;
+  const btcPrice = price || await fetchBtcPrice();
   const cost = await calculateCost(amount, btcPrice);
   let createPurchaseStatus = { status: 'no created' };
-  const purchaseID = userID + when.toString() + amount;
+  const purchaseID = userID + parsedDate.toString() + amount;
+
+  console.log(whenDate);
 
   try {
     const newPurchase = await purchasesDB.doc(purchaseID).get();
     if (!newPurchase.exists) {
       purchasesDB.doc(purchaseID).set({
-        when: when,
+        when: parsedDate,
         purchasePrice: btcPrice,
         amount: amount,
         cost: cost,
