@@ -16,8 +16,6 @@ const createPurchase = async (amount: number, when: any, price: number, userID: 
   let createPurchaseStatus = { status: 'no created' };
   const purchaseID = userID + parsedDate.toString() + amount;
 
-  console.log(whenDate);
-
   try {
     const newPurchase = await purchasesDB.doc(purchaseID).get();
     if (!newPurchase.exists) {
@@ -38,16 +36,15 @@ const createPurchase = async (amount: number, when: any, price: number, userID: 
   return createPurchaseStatus;
 }
 
-// const removePurchase = async (when: Date) => {
-//   let status = { status: 'no removed' };
-//   try {
-//     const purchase = await purchasesDB.doc(when).get();
-//     purchase.exists ? status.status = 'removed' : status.status = 'The Purchase does not exist';
-//   } catch (e) {
-//     status.status = 'There was an error with the request: ' + e;
-//   }
-//   return status;
-// }
+const removePurchase = async (purchasesID:number, purchasesDB:any) => {
+  let status = { status: 'no removed' };
+  try {
+    await purchasesDB.doc(purchasesID).delete().then(() => { status.status = 'Purchase removed' });
+  } catch (e) {
+    status.status = 'There was an error with the request: ' + e;
+  }
+  return status;
+}
 
 const getPurchases = async (userID: string, purchasesDB:any) => {
   const btcPrice = await fetchBtcPrice();
@@ -68,6 +65,7 @@ const getPurchases = async (userID: string, purchasesDB:any) => {
     const currentValue = btcPrice * item.amount;
     const purchase = {
       when: item.when,
+      purchaseID: item.purchaseID,
       purchasePrice: item.purchasePrice,
       amount: item.amount,
       cost: item.cost,
@@ -105,4 +103,4 @@ const getPurchases = async (userID: string, purchasesDB:any) => {
 }
 
 
-export { getPurchases, createPurchase };
+export { getPurchases, createPurchase, removePurchase };

@@ -9,7 +9,7 @@ const usersDB = database.collection('Users');
 require('./services/auth');
 
 import { Request, Response } from 'express';
-import { createPurchase, getPurchases } from './services/purchaseCRUD';
+import { createPurchase, getPurchases, removePurchase } from './services/purchaseCRUD';
 import { createUser } from './services/usersCRUD';
 import { fetchBtcPrice } from './services/fetchBtcPrice';
 
@@ -52,6 +52,11 @@ benKimServer.post('/createPurchase', (req: Request, res: Response) => {
     .then((result) => { res.json(result); });
 });
 
+benKimServer.post('/removePurchase', (req: Request, res: Response) => {
+  removePurchase(req.body.purchaseID, purchasesDB)
+    .then((result) => { res.json(result); });
+});
+
 benKimServer.post('/getPurcharses', (req: Request, res: Response) => {
   getPurchases(req.body.userID, purchasesDB)
     .then((result) => { res.json(result); });
@@ -64,14 +69,3 @@ benKimServer.get('/fetchBtcPrice', (req: Request, res: Response) => {
 benKimServer.listen(443, () => {
   console.log(`Server on port 443`);
 });
-
-// benKimServer.post('/removeVault', (req: Request, res: Response) => {
-//   removePurchase(req.body.amount, req.body.amount)
-//     .then((result) => { res.json(result); });
-// });
-
-// benKimServer.post('/getVaults', (req: Request, res: Response) => {
-//   getPurchases(req.body.owner).then(function(result:any){
-//     res.json(result);
-//   });
-// });
