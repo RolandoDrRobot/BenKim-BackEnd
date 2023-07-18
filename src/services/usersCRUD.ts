@@ -7,6 +7,7 @@ const createUser = async (user: any, usersDB:any) => {
         displayName: user.displayName,
         provider: user.provider,
         email: user.email,
+        photo: user.photos[0].value,
         language: user.language
       });
     }
