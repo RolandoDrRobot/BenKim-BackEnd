@@ -1,5 +1,9 @@
 import { fetchBtcPrice } from './fetchBtcPrice';
-import { calculateCost } from './calculateCost';
+
+const calculateCost = async (amount: number, btcPrice: any) => {
+  const cost = amount * btcPrice;
+  return cost
+}
 
 const createPurchase = async (amount: number, when: any, price: number, userID: string, purchasesDB:any) => {
   // Sum a day for custom Date
