@@ -1,4 +1,6 @@
 require('dotenv').config();
+const pem = require('pem');
+const pemString = pem.encode(process.env.private_key, 'STRING');
 
 function run() {
   const firebase = require('firebase-admin');
@@ -6,7 +8,7 @@ function run() {
     type: process.env.type,
     project_id: process.env.project_id,
     private_key_id: process.env.private_key_id,
-    private_key: process.env.private_key,
+    private_key: pemString,
     client_email: process.env.client_email,
     client_id: process.env.client_id,
     auth_uri: process.env.auth_uri,
