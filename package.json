@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/RolandoDrRobot/BenKim-BackEnd#readme",
   "dependencies": {
+    "axios": "^1.5.1",
     "ccxt": "^4.0.103",
     "cors": "^2.8.5",
     "dotenv": "^11.0.0",
