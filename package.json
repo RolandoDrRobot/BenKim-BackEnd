@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Node / Firebase / Express",
   "main": "src/index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "build": "rm -rf build/ && tsc",
     "dev": "ts-node-dev src/index.ts",
