@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "type": "commonjs",
   "scripts": {
-    "build": "rm -rf build/ && tsc",
+    "build": "rm -rf build/ && tsc && cp ./src/keys.json build/",
     "dev": "ts-node-dev src/index.ts",
     "start": "node build/index.js"
   },
