@@ -1,11 +1,14 @@
-const ccxt = require ('ccxt');
+const axios = require('axios');
+const apiUrl = 'https://api.coincap.io/v2/assets/bitcoin';
 
 const fetchBtcPrice = async () => {
-  const binanceInstance:any = ccxt['binance'];
-  const binance  = new binanceInstance();
-  const tickers = await binance.fetchTickers(['BTC/USDT']);
-  let btcPrice = 0;
-  for (const ticker in tickers) { btcPrice = tickers[ticker].bid }
+  let btcPrice = 0
+  await axios.get(apiUrl).then((response:any) => {
+    btcPrice = response.data.data.priceUsd;
+  }).catch((error:Error) => {
+    console.error('Error al hacer la solicitud a la API a coincap.io:');
+    console.error(error);
+  });
   return btcPrice
 }
 
