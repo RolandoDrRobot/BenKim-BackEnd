@@ -2,6 +2,9 @@ require('dotenv').config();
 
 function run() {
   const firebase = require('firebase-admin');
+  console.log('ROLOOOOOOOO');
+  console.log(process.env.private_key);
+  console.log('ROLOOOOOOOO');
   const firebaseAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
