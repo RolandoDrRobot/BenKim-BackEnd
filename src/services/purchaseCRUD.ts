@@ -1,4 +1,4 @@
-import { fetchBtcPrice } from './fetchBtcPrice';
+const { fetchBtcPrice } = require('./fetchBtcPrice');
 
 const calculateCost = async (amount: number, btcPrice: any) => {
   const cost = amount * btcPrice;
@@ -105,6 +105,5 @@ const getPurchases = async (userID: string, purchasesDB:any) => {
 
   return purchases;
 }
-
 
 export { getPurchases, createPurchase, removePurchase };

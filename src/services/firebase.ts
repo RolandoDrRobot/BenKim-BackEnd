@@ -9,5 +9,4 @@ function run() {
   const database = firebase.firestore();
   return database;
 }
-
 export { run };

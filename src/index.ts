@@ -8,12 +8,12 @@ app.use(express.urlencoded({ extended: false }));
 
 
 // Firebase and Database
-import { run } from './services/firebase';
+const { run } = require('./services/firebase');
 const database = run();
 const usersDB = database.collection('Users');
 const purchasesDB = database.collection('Purchases');
-import { createUser } from './services/usersCRUD';
-import { createPurchase, getPurchases, removePurchase } from './services/purchaseCRUD';
+const { createUser } = require('./services/usersCRUD');
+const { createPurchase, getPurchases, removePurchase } = require('./services/purchaseCRUD');
 
 
 // Authentication
@@ -39,14 +39,14 @@ app.get('/auth/google/callback', (req:any, res:any, next:any) => {
 
 
 // Websocket Server
-import WebSocket from 'ws';
+const WS = require('ws');
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server, { cors: { origin: 'http://localhost:3000', methods: ["GET","POST"] }});
 
 const bitcoinWsURL = 'wss://ws.coincap.io/prices?assets=bitcoin';
-const bitcoinSocket = new WebSocket(bitcoinWsURL);
+const bitcoinSocket = new WS(bitcoinWsURL);
 bitcoinSocket.on('message', (data:any) => {
   const buffer = Buffer.from(data);
   const dataString = buffer.toString('utf8');
@@ -66,21 +66,21 @@ server.listen(3001, () => { console.log(`Server HTTP on port 3001`) });
 
 
 // Server APIs
-import { Request, Response } from 'express';
+const { Req, Res } = require('express');
 
-app.post('/createPurchase', (req: Request, res: Response) => {
+app.post('/createPurchase', (req: typeof Req, res: typeof Res) => {
   createPurchase(req.body.amount, req.body.when, req.body.price, req.body.userID, purchasesDB)
-    .then((result) => { res.json(result); });
+    .then((result:any) => { res.json(result); });
 });
 
-app.post('/removePurchase', (req: Request, res: Response) => {
+app.post('/removePurchase', (req: typeof Req, res: typeof Res) => {
   removePurchase(req.body.purchaseID, purchasesDB)
-    .then((result) => { res.json(result); });
+    .then((result:any) => { res.json(result); });
 });
 
-app.post('/getPurcharses', (req: Request, res: Response) => {
+app.post('/getPurcharses', (req: typeof Req, res: typeof Res) => {
   getPurchases(req.body.userID, purchasesDB)
-    .then((result) => { res.json(result); });
+    .then((result:any) => { res.json(result); });
 });
 
 app.listen(443, () => {
