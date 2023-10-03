@@ -64,7 +64,6 @@ io.on('connection', (socket:any) => {
 
 server.listen(3001, () => { console.log(`Server HTTP on port 3001`) });
 
-
 // Server APIs
 const { Req, Res } = require('express');
 
@@ -83,6 +82,8 @@ app.post('/getPurcharses', (req: typeof Req, res: typeof Res) => {
     .then((result:any) => { res.json(result); });
 });
 
-app.listen(443, () => {
+const port = process.env.PORT || 443;
+
+app.listen(port, () => {
   console.log(`Server on port 443`);
 });
