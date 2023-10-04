@@ -19,3 +19,4 @@ pass.serializeUser(function(user:any, done:any) {
 pass.deserializeUser(function(user:any, done:any) {
   done(null, user);
 });
+
