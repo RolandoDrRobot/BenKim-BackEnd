@@ -2,14 +2,15 @@ const axios = require('axios');
 const apiUrl = 'https://api.coincap.io/v2/assets/bitcoin';
 
 const fetchBtcPrice = async () => {
-  let btcPrice = 0
-  await axios.get(apiUrl).then((response:any) => {
-    btcPrice = response.data.data.priceUsd;
-  }).catch((error:Error) => {
-    console.error('Error al hacer la solicitud a la API a coincap.io:');
+  try {
+    const response = await axios.get(apiUrl);
+    const btcPrice = response.data.data.priceUsd;
+    return btcPrice;
+  } catch (error) {
+    console.error('Error al hacer la solicitud a la API de coincap.io:');
     console.error(error);
-  });
-  return btcPrice
-}
+    throw error;
+  }
+};
 
 export { fetchBtcPrice };
